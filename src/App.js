@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 let socket = null;
 
 function connectSocket() {
+  // socket = io('http://192.168.86.33:6800');
   socket = io();
 
   socket.on('connect', () => {
@@ -17,8 +18,12 @@ function connectSocket() {
 }
 
 function listenPlayer(player) {
+  let syncing = false;
+  let waiting = true;
+
   // Play
   player.addEventListener('play', () => {
+    if (waiting || syncing) return;
     socket.emit('play');
   });
   socket.on('play', () => {
@@ -27,31 +32,42 @@ function listenPlayer(player) {
 
   // Pause
   player.addEventListener('pause', () => {
+    if (waiting || syncing) return;
     socket.emit('pause');
   });
   socket.on('pause', () => {
     player.pause();
   });
 
-  let seeking = false;
   // Seeked
-  player.addEventListener('timeupdate', (event) => {
-    if (seeking) {
-      seeking = false;
+  player.addEventListener('seeked', (event) => {
+    // 如果是来自同步则忽略
+    if (syncing) {
+      syncing = false;
       return;
     };
     socket.emit('seeked', player.currentTime);
+    // 等待其他设备
+    waiting = true;
+    // 先一起暂停，等待其他设备加载进度
+    player.pause();
+    console.log('paused');
   });
+  // 接收到其他设备的进度 => 同步进度
   socket.on('seeked', (playtime) => {
-    if (Math.abs(playtime - player.currentTime) < 2) return;
     player.currentTime = playtime;
-    seeking = true;
-    player.play();
+    // 防止同步进度再次触发seeked event
+    syncing = true;
   });
 
-  // 
-  player.addEventListener('waiting', (event) => {
-    console.log('Video is waiting for more data.');
+  // 同步进度后，可以播放了
+  player.addEventListener('canplay', () => {
+    if (waiting) {
+      waiting = false;
+      return;
+    }
+    player.play();
+    console.log('canplay play');
   });
 }
 
