@@ -45,7 +45,7 @@ function listenPlayer(player) {
     if (syncing) {
       syncing = false;
       return;
-    };
+    }
     socket.emit('seeked', player.currentTime);
     // 等待其他设备
     waiting = true;
@@ -66,8 +66,10 @@ function listenPlayer(player) {
       waiting = false;
       return;
     }
-    player.play();
-    console.log('canplay play');
+    setTimeout(() => {
+      player.play();
+      console.log('canplay play');
+    }, 150);
   });
 }
 
@@ -85,7 +87,9 @@ function App() {
     <div className="App">
       {!started && (
         <div style={styles.splashScreen}>
-          <div style={styles.startBtn} onClick={() => setStart(true)}>Start</div>
+          <div style={styles.startBtn} onClick={() => setStart(true)}>
+            Start
+          </div>
         </div>
       )}
       <header className="App-header">
