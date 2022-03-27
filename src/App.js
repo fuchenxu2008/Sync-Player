@@ -23,7 +23,7 @@ function listenPlayer(player) {
 
   // Play
   player.addEventListener('play', () => {
-    if (waiting || syncing) return;
+    if (syncing) return;
     socket.emit('play');
   });
   socket.on('play', () => {
@@ -32,7 +32,7 @@ function listenPlayer(player) {
 
   // Pause
   player.addEventListener('pause', () => {
-    if (waiting || syncing) return;
+    if (syncing) return;
     socket.emit('pause');
   });
   socket.on('pause', () => {
