@@ -43,7 +43,7 @@ function listenPlayer(player) {
     socket.emit('seeked', player.currentTime);
   });
   socket.on('seeked', (playtime) => {
-    if (Math.abs(playtime - player.currentTime) < 1) return;
+    if (Math.abs(playtime - player.currentTime) < 2) return;
     player.currentTime = playtime;
     seeking = true;
     player.play();
