@@ -23,6 +23,7 @@ socket.on('connect_error', (err) => {
 });
 
 socket.on('request-vid', ([start, end]) => {
+  console.log('request-vid');
   const stream = ss.createStream();
   fs.createReadStream(videoPath, { start, end }).pipe(stream);
   ss(socket).emit('video-data', stream);

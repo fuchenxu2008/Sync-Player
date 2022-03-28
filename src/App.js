@@ -95,7 +95,7 @@ function App() {
         </div>
       )}
       <header className="App-header">
-        <video ref={vidRef} controls width="50%" autoPlay>
+        <video ref={vidRef} controls width="50%">
           <source
             // src={`http://192.168.86.33:6800/video?userId=${userId}`}
             src={`/video?userId=${userId}`}
