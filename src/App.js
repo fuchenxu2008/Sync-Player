@@ -1,12 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
 import './App.css';
 import io from 'socket.io-client';
+import { v1 } from 'uuid';
 
 let socket = null;
+const userId = v1();
 
 function connectSocket() {
-  // socket = io('http://192.168.86.33:6800');
-  socket = io();
+  // socket = io.connect('http://192.168.86.33:6800/', { query: `userId=${userId}` });
+  socket = io('https://manager.zhitiaox.com', { query: `userId=${userId}` });
 
   socket.on('connect', () => {
     console.log('Socket connected');
@@ -23,7 +25,7 @@ function listenPlayer(player) {
 
   // Play
   player.addEventListener('play', () => {
-    if (syncing) return;
+    if (waiting || syncing) return;
     socket.emit('play');
   });
   socket.on('play', () => {
@@ -93,9 +95,11 @@ function App() {
         </div>
       )}
       <header className="App-header">
-        <video ref={vidRef} controls width={700}>
+        <video ref={vidRef} controls width="50%" autoPlay>
           <source
-            src="https://cdn.zhitiaox.com/static/Doctor.Who.S06E10.mp4"
+            // src={`http://192.168.86.33:6800/video?userId=${userId}`}
+            src={`/video?userId=${userId}`}
+            // src="https://cdn.zhitiaox.com/static/Doctor.Who.S06E10.mp4"
             type="video/mp4"
           />
         </video>
