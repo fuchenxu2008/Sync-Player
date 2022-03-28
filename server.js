@@ -26,6 +26,7 @@ let videoSize = 0;
 const userResMap = new Map();
 
 app.get("/video", function (req, res) {
+  console.log('get /video');
   const { range } = req.headers;
   const { userId } = req.query;
   if (!range) {
@@ -48,6 +49,7 @@ app.get("/video", function (req, res) {
     return;
   }
   fileStreamerSocket.emit('request-vid', [start, end]);
+  console.log('go request-vid');
 });
 
 app.get('*', (req, res) => {
@@ -95,7 +97,9 @@ function streamController(socket) {
   console.log('Streamer connected');
   fileStreamerSocket = socket;
   videoSize = socket.handshake.query.videoSize;
+  console.log('videoSize: ', videoSize);
   ss(socket).on('video-data', function(stream, data) {
+    console.log('on video-data');
     for (let [, res] of userResMap.entries()) {
       stream.pipe(res);
     }
