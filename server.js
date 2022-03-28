@@ -30,7 +30,9 @@ app.get("/video", function (req, res) {
   const { range } = req.headers;
   const { userId } = req.query;
   if (!range) {
+      console.log('no range');
       res.status(400).send("Requires Range header");
+      return;
   }
   userResMap.set(userId, res);
   const start = Number(range.replace(/\D/g, ""));
